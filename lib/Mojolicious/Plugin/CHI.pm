@@ -2,9 +2,7 @@ package Mojolicious::Plugin::CHI;
 use Mojo::Base 'Mojolicious::Plugin';
 use CHI;
 
-
-our $VERSION = '0.01';
-
+our $VERSION = '0.02';
 
 # Register Plugin
 sub register {
@@ -32,7 +30,7 @@ sub register {
     $caches = $mojo->chi_handles;
   };
 
-  # Init databases (on fork)
+  # Init caches (on fork)
   Mojo::IOLoop->timer(
     0 => sub {
 
@@ -47,13 +45,16 @@ sub register {
 	my $cache = CHI->new( %$cache_param );
 
 	# No succesful creation
-	$mojo->log->warn("Unable to create cache handle '$name'") unless $cache;
+	unless ($cache) {
+	  $mojo->log->warn("Unable to create cache handle '$name'");
+	};
 
 	# Store database handle
 	$caches->{$name} = $cache;
       };
     }
   );
+
 
   # Add 'chi' helper
   $mojo->helper(
@@ -70,7 +71,9 @@ sub register {
     });
 };
 
+
 1;
+
 
 __END__
 
@@ -172,7 +175,6 @@ C<default> is assumed.
 =head1 DEPENDENCIES
 
 L<Mojolicious>,
-L<Carp>,
 L<CHI>.
 
 B<Note:> L<CHI> has a lot of dependencies. It is
