@@ -2,7 +2,7 @@ package Mojolicious::Plugin::CHI;
 use Mojo::Base 'Mojolicious::Plugin';
 use CHI;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 # Register Plugin
 sub register {
@@ -79,6 +79,8 @@ __END__
 
 =pod
 
+=encoding utf8
+
 =head1 NAME
 
 Mojolicious::Plugin::CHI - Use CHI caches within Mojolicious
@@ -93,7 +95,7 @@ Mojolicious::Plugin::CHI - Use CHI caches within Mojolicious
       root_dir   => '/cache',
       cache_size => '20m'
     }
-  );
+  });
 
   # Mojolicious::Lite
   plugin 'CHI' => {
@@ -180,6 +182,11 @@ L<CHI>.
 B<Note:> L<CHI> has a lot of dependencies. It is
 thus not recommended to use this plugin in a CGI
 environment.
+
+
+=head1 CONTRIBUTORS
+
+Boris Däppen (borisdaeppen)
 
 
 =head1 AVAILABILITY
