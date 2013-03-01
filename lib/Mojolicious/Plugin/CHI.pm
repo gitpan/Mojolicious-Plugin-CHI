@@ -2,7 +2,7 @@ package Mojolicious::Plugin::CHI;
 use Mojo::Base 'Mojolicious::Plugin';
 use CHI;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 # Register Plugin
 sub register {
@@ -17,14 +17,17 @@ sub register {
   my $caches = {};
 
   # Support namespaces
-  my $ns = delete $param->{namespaces};
+  my $ns = delete $param->{namespaces} // 1;
 
   # Loop through all caches
   foreach my $name (keys %$param) {
     my $cache_param = $param->{$name};
 
     # Already exists
-    next if exists $caches->{$name};
+    if (exists $caches->{$name}) {
+      $mojo->log->warn("Multiple attempts to establish cache '$name'");
+      next;
+    };
 
     # Set namespace
     if ($ns) {
@@ -72,7 +75,7 @@ __END__
 
 =head1 NAME
 
-Mojolicious::Plugin::CHI - Use CHI caches within Mojolicious
+Mojolicious::Plugin::CHI - Use CHI caches in Mojolicious
 
 
 =head1 SYNOPSIS
@@ -111,7 +114,7 @@ L<CHI> caches within Mojolicious.
 
 =head1 METHODS
 
-=head2 C<register>
+=head2 register
 
   # Mojolicious
   $app->plugin(CHI => {
@@ -145,23 +148,22 @@ L<CHI> caches within Mojolicious.
 Called when registering the plugin.
 On creation, the plugin accepts a hash of cache names
 associated with L<CHI> objects.
-In addition to that, you can make all cache handles
-qualified L<CHI> namespaces by setting the C<namespaces> parameter
-to a true value.
+
+All cache handles are qualified L<CHI> namespaces.
+You can omit this mapping by passing a C<namespaces>
+parameter with a false value.
+
+The handles have to be unique, i.e.
+you can't have multiple different C<default> caches in mounted
+applications using L<Mojolicious::Plugin::Mount>.
 
 All parameters can be set either on registration or
 as part of the configuration file with the key C<CHI>.
 
-B<Note:> Currently, the C<namespaces> flag is off by default
-and cache handles are independent from namespaces.
-This will change in an upcoming release.
-To prevent cache rebuilding in the future, set C<namespaces>
-to a true value.
-
 
 =head1 HELPERS
 
-=head2 C<chi>
+=head2 chi
 
   # In Controllers:
   $c->chi('MyCache')->set(my_key => 'This is my value', '10 min');
@@ -186,9 +188,10 @@ environment.
 
 =head1 CONTRIBUTORS
 
-Boris Däppen (borisdaeppen)
+L<Boris Däppen|https://github.com/borisdaeppen>
 
-reneeb
+L<reneeb|https://github.com/reneeb>
+
 
 =head1 AVAILABILITY
 
@@ -197,7 +200,7 @@ reneeb
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2012, Nils Diewald.
+Copyright (C) 2012-2013, L<Nils Diewald|http://nils-diewald.de/>.
 
 This program is free software, you can redistribute it
 and/or modify it under the same terms as Perl.
