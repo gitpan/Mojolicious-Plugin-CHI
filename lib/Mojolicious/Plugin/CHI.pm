@@ -2,13 +2,13 @@ package Mojolicious::Plugin::CHI;
 use Mojo::Base 'Mojolicious::Plugin';
 use CHI;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 # Register Plugin
 sub register {
   my ($plugin, $mojo, $param) = @_;
 
-  # Load parameter from Config file
+  # Load parameter from config file
   if (my $config_param = $mojo->config('CHI')) {
     $param = { %$config_param, %$param };
   };
@@ -60,7 +60,8 @@ sub register {
 
       # Return cache
       return $cache;
-    });
+    }
+  );
 };
 
 
@@ -75,7 +76,7 @@ __END__
 
 =head1 NAME
 
-Mojolicious::Plugin::CHI - Use CHI caches in Mojolicious
+Mojolicious::Plugin::CHI - Use CHI Caches in Mojolicious
 
 
 =head1 SYNOPSIS
@@ -181,16 +182,17 @@ C<default> is assumed.
 L<Mojolicious>,
 L<CHI>.
 
-B<Note:> L<CHI> has a lot of dependencies. It is
-thus not recommended to use this plugin in a CGI
-environment.
+B<Note:> Old versions of L<CHI> had a lot of dependencies.
+It was thus not recommended to use this plugin in a CGI
+environment. Since new versions of CHI use L<Moo> instead of
+L<Moose>, more use cases may be possible.
 
 
 =head1 CONTRIBUTORS
 
 L<Boris Däppen|https://github.com/borisdaeppen>
 
-L<reneeb|https://github.com/reneeb>
+L<Renée Bäcker|https://github.com/reneeb>
 
 
 =head1 AVAILABILITY
@@ -200,9 +202,9 @@ L<reneeb|https://github.com/reneeb>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2012-2013, L<Nils Diewald|http://nils-diewald.de/>.
+Copyright (C) 2012-2014, L<Nils Diewald|http://nils-diewald.de/>.
 
 This program is free software, you can redistribute it
-and/or modify it under the same terms as Perl.
+and/or modify it under the terms of the Artistic License version 2.0.
 
 =cut

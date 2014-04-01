@@ -4,8 +4,6 @@ use Test::More;
 use Test::Mojo;
 use File::Temp qw/:POSIX tempdir/;
 
-$|++;
-
 use lib 'lib';
 use lib '../lib';
 
@@ -65,9 +63,15 @@ ok($my_cache, 'CHI handle');
 ok($my_cache->set(key_1 => 'Wert 1'), 'Wert 1');
 is($my_cache->get('key_1'), 'Wert 1', 'Wert 1');
 
-opendir(D, $path);
-@test = readdir(D);
-closedir(D);
+if (opendir(D, $path)) {
+  @test = readdir(D);
+  closedir(D);
+  pass('Read cache dir');
+}
+
+else {
+  fail('Unable to read cache dir');
+};
 
 ok('MyCache2' ~~ \@test, 'Namespace option valid');
 

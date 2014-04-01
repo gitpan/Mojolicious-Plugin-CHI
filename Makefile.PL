@@ -7,7 +7,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
   NAME         => 'Mojolicious::Plugin::CHI',
   VERSION_FROM => 'lib/Mojolicious/Plugin/CHI.pm',
-  ABSTRACT     => 'Use CHI caches in Mojolicious',
+  ABSTRACT     => 'Use CHI Caches in Mojolicious',
   AUTHOR       => 'Nils Diewald',
   BUILD_REQUIRES => {
     'Test::More' => 0
@@ -16,7 +16,7 @@ WriteMakefile(
     'Mojolicious' => 3.43,
     'CHI'         => 0
   },
-  LICENSE      => 'perl',
+  LICENSE      => 'artistic_2',
   META_MERGE   => {
     requires  => {perl => '5.010001'},
     resources => {
