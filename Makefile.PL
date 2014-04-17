@@ -10,10 +10,11 @@ WriteMakefile(
   ABSTRACT     => 'Use CHI Caches in Mojolicious',
   AUTHOR       => 'Nils Diewald',
   BUILD_REQUIRES => {
-    'Test::More' => 0
+    'Test::More' => 0,
+    'Test::Output' => 1.0
   },
   PREREQ_PM => {
-    'Mojolicious' => 3.43,
+    'Mojolicious' => 4.77,
     'CHI'         => 0
   },
   LICENSE      => 'artistic_2',

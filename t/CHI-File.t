@@ -36,8 +36,7 @@ opendir(D, $path);
 my @test = readdir(D);
 closedir(D);
 
-ok('MyCache2' ~~ \@test, 'Namespace option valid');
-
+ok(join(',', @test) =~ m/MyCache2/, 'Namespace option valid');
 
 # Test with new namespace default
 
@@ -50,7 +49,7 @@ $c->app($app);
 $path = tempdir(CLEANUP => 1);
 
 $app->plugin(CHI => {
-  MyCache2 => {
+  MyCache3 => {
     driver => 'File',
     root_dir => $path
   }
@@ -58,7 +57,7 @@ $app->plugin(CHI => {
 
 Mojo::IOLoop->start;
 
-$my_cache = $c->chi('MyCache2');
+$my_cache = $c->chi('MyCache3');
 ok($my_cache, 'CHI handle');
 ok($my_cache->set(key_1 => 'Wert 1'), 'Wert 1');
 is($my_cache->get('key_1'), 'Wert 1', 'Wert 1');
@@ -73,7 +72,7 @@ else {
   fail('Unable to read cache dir');
 };
 
-ok('MyCache2' ~~ \@test, 'Namespace option valid');
+ok(join(',', @test) =~ m/MyCache3/, 'Namespace option valid');
 
 # Test with off namespace
 
@@ -86,7 +85,7 @@ $c->app($app);
 $path = tempdir(CLEANUP => 1);
 
 $app->plugin(CHI => {
-  MyCache2 => {
+  MyCache4 => {
     driver => 'File',
     root_dir => $path
   },
@@ -95,7 +94,7 @@ $app->plugin(CHI => {
 
 Mojo::IOLoop->start;
 
-$my_cache = $c->chi('MyCache2');
+$my_cache = $c->chi('MyCache4');
 ok($my_cache, 'CHI handle');
 ok($my_cache->set(key_1 => 'Wert 1'), 'Wert 1');
 is($my_cache->get('key_1'), 'Wert 1', 'Wert 1');

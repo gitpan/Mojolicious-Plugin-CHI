@@ -1,8 +1,9 @@
 package Mojolicious::Plugin::CHI;
 use Mojo::Base 'Mojolicious::Plugin';
+use Scalar::Util 'weaken';
 use CHI;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08_1';
 
 # Register Plugin
 sub register {
@@ -14,10 +15,33 @@ sub register {
   };
 
   # Hash of cache handles
-  my $caches = {};
+  my $caches;
+
+  # Add 'chi_handles' attribute
+  # Necessary for multiple cache registrations
+  unless ($mojo->can('chi_handles')) {
+    $mojo->attr(
+      chi_handles => sub {
+	return ($caches //= {});
+      }
+    );
+  }
+
+  # Get caches from application
+  else {
+    $caches = $mojo->chi_handles;
+  };
+
 
   # Support namespaces
   my $ns = delete $param->{namespaces} // 1;
+
+  # Create log callback for CHI Logging
+  my $log = $mojo->log;
+  weaken $log;
+  my $log_ref = sub {
+    $log->warn( shift ) if defined $log;
+  };
 
   # Loop through all caches
   foreach my $name (keys %$param) {
@@ -25,7 +49,7 @@ sub register {
 
     # Already exists
     if (exists $caches->{$name}) {
-      $mojo->log->warn("Multiple attempts to establish cache '$name'");
+      $mojo->log->warn(qq{Multiple attempts to establish cache "$name"});
       next;
     };
 
@@ -35,16 +59,24 @@ sub register {
     };
 
     # Get CHI handle
-    my $cache = CHI->new( %$cache_param );
+    my $cache = CHI->new(
+
+      # Set logging routines
+      on_get_error => $log_ref,
+      on_set_error => $log_ref,
+
+      %$cache_param
+    );
 
     # No succesful creation
-    unless ($cache) {
-      $mojo->log->warn("Unable to create cache handle '$name'");
-    };
+    $mojo->log->warn(qq{Unable to create cache handle "$name"}) unless $cache;
 
     # Store CHI handle
     $caches->{$name} = $cache;
   };
+
+  # Add 'chi' command
+  push @{$mojo->commands->namespaces}, __PACKAGE__;
 
 
   # Add 'chi' helper
@@ -56,7 +88,7 @@ sub register {
       my $cache = $caches->{$name};
 
       # Cache unknown
-      $mojo->log->warn("Unknown cache handle '$name'") unless $cache;
+      $c->app->log->warn(qq{Unknown cache handle "$name"}) unless $cache;
 
       # Return cache
       return $cache;
@@ -161,6 +193,10 @@ applications using L<Mojolicious::Plugin::Mount>.
 All parameters can be set either on registration or
 as part of the configuration file with the key C<CHI>.
 
+Logging defaults to the application log, but can be
+overridden using L<on_get_error|CHI/on_get_error> and
+L<on_set_error|CHI/on_set_error>.
+
 
 =head1 HELPERS
 
@@ -175,6 +211,51 @@ Returns a L<CHI> handle if registered.
 Accepts the name of the registered cache.
 If no cache handle name is given, a cache handle name
 C<default> is assumed.
+
+
+=head1 COMMANDS
+
+The following commands are available
+when the plugin is registered.
+
+=head2 chi list
+
+  perl app.pl chi list
+
+List all CHI caches associated with your application.
+
+
+=head2 chi purge
+
+  perl app.pl chi purge mycache
+
+Remove all expired entries from the cache namespace.
+
+
+=head2 chi clear
+
+  perl app.pl chi clear mycache
+
+Remove all entries from the cache namespace.
+
+
+=head2 chi expire
+
+  perl app.pl chi expire mykey
+  perl app.pl chi expire mycache mykey
+
+Set the expiration date of a key to the past.
+This does not necessarily delete the data,
+but makes it unavailable using L</get>.
+
+
+=head2 chi remove
+
+  perl app.pl chi remove mykey
+  perl app.pl chi remove mycache mykey
+
+Remove a key from the cache.
+
 
 
 =head1 DEPENDENCIES
