@@ -69,7 +69,9 @@ my $path = tempdir(CLEANUP => 1);
 $app->plugin(CHI => {
   MyFlatFile => {
     driver => 'File',
-    root_dir => $path
+    root_dir => $path,
+    # This may be a mysterious CHI bug
+    max_key_length => 200
   }
 });
 
@@ -202,9 +204,5 @@ stdout_is(
   qq{Unable to remove key "key_3" from cache "default".\n\n},
   'Expire key'
 );
-
-
-
-
 
 done_testing;
