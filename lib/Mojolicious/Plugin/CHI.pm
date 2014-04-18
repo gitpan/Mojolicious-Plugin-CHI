@@ -3,7 +3,7 @@ use Mojo::Base 'Mojolicious::Plugin';
 use Scalar::Util 'weaken';
 use CHI;
 
-our $VERSION = '0.08_1';
+our $VERSION = '0.08_2';
 
 # Register Plugin
 sub register {
@@ -194,8 +194,8 @@ All parameters can be set either on registration or
 as part of the configuration file with the key C<CHI>.
 
 Logging defaults to the application log, but can be
-overridden using L<on_get_error|CHI/on_get_error> and
-L<on_set_error|CHI/on_set_error>.
+overridden using L<on_get_error|CHI/CONSTRUCTOR> and
+L<on_set_error|CHI/CONSTRUCTOR>.
 
 
 =head1 HELPERS
@@ -246,7 +246,7 @@ Remove all entries from the cache namespace.
 
 Set the expiration date of a key to the past.
 This does not necessarily delete the data,
-but makes it unavailable using L</get>.
+but makes it unavailable using C<get>.
 
 
 =head2 chi remove
