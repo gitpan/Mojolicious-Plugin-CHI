@@ -3,7 +3,7 @@ use Mojo::Base 'Mojolicious::Plugin';
 use Scalar::Util 'weaken';
 use CHI;
 
-our $VERSION = '0.08_3';
+our $VERSION = '0.09';
 
 # Register Plugin
 sub register {
@@ -181,21 +181,18 @@ L<CHI> caches within Mojolicious.
 Called when registering the plugin.
 On creation, the plugin accepts a hash of cache names
 associated with L<CHI> objects.
-
 All cache handles are qualified L<CHI> namespaces.
 You can omit this mapping by passing a C<namespaces>
 parameter with a C<false> value.
-
 The handles have to be unique, i.e.
 you can't have multiple different C<default> caches in mounted
 applications using L<Mojolicious::Plugin::Mount>.
-
-All parameters can be set either on registration or
-as part of the configuration file with the key C<CHI>.
-
 Logging defaults to the application log, but can be
 overridden using L<on_get_error|CHI/CONSTRUCTOR> and
 L<on_set_error|CHI/CONSTRUCTOR>.
+
+All parameters can be set either on registration or
+as part of the configuration file with the key C<CHI>.
 
 
 =head1 HELPERS
